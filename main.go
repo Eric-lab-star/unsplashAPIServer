@@ -3,14 +3,15 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
+
+	"github.com/Eirc-lab-star/apiServer/unsplash"
 )
 
 var baseURI = "https://api.unsplash.com"
 
-type resp struct {
+type authKeys struct {
 	Id   string `json:"name"`
 	Akey string `json:"ACCESS_KEY"`
 	Skey string `json:"SECRET_KEY"`
@@ -25,7 +26,7 @@ func main() {
 	}
 	data := make([]byte, s)
 	_, err = file.Read(data)
-	env := resp{}
+	env := authKeys{}
 	err = json.Unmarshal(data, &env)
 	if err != nil {
 		fmt.Printf("json panic %v\n", err)
@@ -33,17 +34,7 @@ func main() {
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		photo := fmt.Sprintf("%s/photos", baseURI)
-		c := &http.Client{}
-		req, err := http.NewRequest("GET", photo, nil)
-		req.Header.Add("Authorization", "Client-ID "+env.Akey)
-		if err != nil {
-			panic(err)
-		}
-		resp, err := c.Do(req)
-		b, err := io.ReadAll(resp.Body)
-		if err != nil {
-			panic(err)
-		}
+		b := unsplash.Get(r, env.Akey, photo)
 		w.Write(b)
 	})
 
