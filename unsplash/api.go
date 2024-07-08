@@ -1,14 +1,42 @@
 package unsplash
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 )
 
+type Response struct {
+	Id          string `json:"id"`
+	Description string `json:"description"`
+	Urls        struct {
+		Full    string `json:"full"`
+		Regular string `json:"regular"`
+		Small   string `json:"small"`
+		Thumb   string `json:"thumb"`
+	} `json:"urls"`
+	User struct {
+		FirstName string `json:"first_name"`
+		LastName  string `json:"last_name"`
+	} `json:"user"`
+}
+
 func addAuthHeader(req *http.Request, akey string) {
 	authHeader := fmt.Sprintf("Client-ID %s", akey)
 	req.Header.Add("Authorization", authHeader)
+}
+
+func FilterResp(data []byte) []Response {
+
+	var res []Response
+	err := json.Unmarshal(data, &res)
+	if err != nil {
+		fmt.Println("Error unmarshalling data:")
+		panic(err)
+	}
+
+	return res
 }
 
 func Get(req *http.Request, akey string, uri string) []byte {
@@ -24,5 +52,12 @@ func Get(req *http.Request, akey string, uri string) []byte {
 	if err != nil {
 		panic(err)
 	}
-	return b
+
+	res := FilterResp(b)
+
+	d, err := json.Marshal(res)
+	if err != nil {
+		panic(err)
+	}
+	return d
 }
