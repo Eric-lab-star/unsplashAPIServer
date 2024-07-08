@@ -1,4 +1,6 @@
 key.json
-sample.json
+# sample.json
 node_modules/
 .pnpm
+
+.DS_Store
