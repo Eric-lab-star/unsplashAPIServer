@@ -13,11 +13,9 @@ import (
 // "/photos" --> get all images
 // "/photos?id=1" --> get iamge by id
 func photos(db *sql.DB) http.HandlerFunc {
-
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		id := r.FormValue("id")
-
 		if id == "" {
 			withoutId(w, db)
 			return
