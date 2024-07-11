@@ -15,6 +15,8 @@ func Start() {
 	query.CreateTable(db)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(&w)
+		w.Header().Set("Content-Type", "text")
 		w.Write([]byte("All photos are retrieved from Unsplsh api"))
 	})
 
@@ -24,4 +26,8 @@ func Start() {
 
 	fmt.Println("Server is running on port 8080...")
 	http.ListenAndServe(":8080", nil)
+}
+
+func enableCORS(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 }
